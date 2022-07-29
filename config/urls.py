@@ -48,7 +48,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # local urls
-    path('account/', include('apps.team_user.urls')),
+    # path('account/', include('apps.team_user.urls')),
     path('task/', include('apps.task.urls')),
     path('notifications/', include('apps.notifications.urls')),
     path('todo/', include('apps.todo.urls')),

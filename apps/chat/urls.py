@@ -3,5 +3,6 @@ from .views import *
 
 
 urlpatterns = [
-    path('list-create', ChatListCreateAPIView.as_view())
+    path('list/', ChatListAPIView.as_view()),
+    path('create/', ChatCreateAPIView.as_view()),
 ]

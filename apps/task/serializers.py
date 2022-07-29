@@ -18,14 +18,14 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = (
             'id', 'title', 'description', 'priority', 'priority_display', 'status', 'status_display', 'supervisor',
-            'superuser', 'group', 'is_deleted', 'updated_at', 'created_at')
+            'group', 'is_deleted', 'updated_at', 'created_at')
 
 
 class TaskCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = (
-            'id', 'title', 'description', 'priority', 'status', 'superuser', 'group', 'deadline')
+            'id', 'title', 'description', 'priority', 'status', 'supervisor', 'group', 'deadline')
 
 
 class SendTaskCreateSerializer(serializers.ModelSerializer):

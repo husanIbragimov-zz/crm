@@ -8,15 +8,17 @@ from rest_framework import generics, status, response, viewsets, mixins
 from .models import Task, SendTask, Comment
 from rest_framework.permissions import IsAuthenticated
 from ..team_user.permissions import IsAdminUserForAccount
+from . import serializers
 
 
 class TaskListAPIView(generics.ListAPIView):
+    queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = (IsAuthenticated,)
     filter_backends = [SearchFilter, OrderingFilter]
 
     def get_queryset(self, *args, **kwargs):
-        queryset_list = Task.objects.all()
+        queryset_list = super().get_queryset().filter(is_deleted=False)
         query = self.request.GET.get('q')
         if query:
             queryset_list = queryset_list.filter(
@@ -32,6 +34,13 @@ class TaskCreateAPIView(generics.CreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskCreateUpdateSerializer
     permission_classes = (IsAdminUserForAccount,)
+
+
+class TaskRetrieveAPIView(generics.RetrieveAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    permission_classes = (IsAuthenticated,)
+    lookup_field = 'pk'
 
 
 class TaskMixin(mixins.UpdateModelMixin, generics.GenericAPIView):
@@ -79,21 +88,22 @@ class SendTaskCreateAPIView(generics.CreateAPIView):
     serializer_class = SendTaskCreateSerializer
     permission_classes = (IsAdminUserForAccount,)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         user = self.request.user
         serializer.save(sender=user)
 
 
-# class CommentListCreateAPIView(generics.ListCreateAPIView):
-#     queryset = Comment.objects.all()
-#     serializer_class = CommentCreateSerializer
-#     permission_classes = (IsAuthenticated,)
-#
-
-
 class CommentDetailAPIView(generics.RetrieveAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
     lookup_field = 'pk'
 
 
@@ -115,3 +125,16 @@ class CommentListAPIView(generics.ListAPIView):
 class CommentCreateAPIView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        serializer = serializers.CommentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.save(user=user)
+

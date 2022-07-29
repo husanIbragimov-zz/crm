@@ -32,6 +32,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     image = models.ImageField(null=True, blank=True, upload_to='profile/')
     is_active = models.BooleanField(default=False, verbose_name='Active user')
     is_superuser = models.BooleanField(default=False, verbose_name='Super user')
+    is_supervisor = models.BooleanField(default=False, verbose_name='Supervisor')
     is_admin = models.BooleanField(default=False, verbose_name='Admin user')
     is_staff = models.BooleanField(default=False, verbose_name='Staff user')
     date_login = models.DateTimeField(auto_now=True, verbose_name='Last login')

@@ -10,14 +10,13 @@ class NotificationListAPIView(generics.ListAPIView):
     serializer_class = NotificationSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset().filter(is_read=False)
+        return qs
+
 
 class NotificationCreateAPIView(generics.CreateAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationCreateSerializer
     permission_classes = (IsAdminUserForAccount,)
-
-    def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset().filter(is_read=False)
-        return qs
-
 
